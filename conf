@@ -1,0 +1,24 @@
+{ config, pkgs, ... }:
+
+{
+  imports = [ ./hardware-configuration.nix ];
+
+  # 1. СТАВИМ ЯДРО CACHYOS
+  # Оно уже пропатчено для максимальной производительности
+  boot.kernelPackages = pkgs.linuxPackages_cachyos;
+
+  # 2. ВКЛЮЧАЕМ SCHED_EXT (SCX)
+  services.scx.enable = true;
+  
+  # Выбираем планировщик.
+  # "scx_rusty" — самый популярный и сбалансированный (от Google/Meta).
+  # "scx_lavd" — хорош для игр (Low Latency).
+  services.scx.scheduler = "scx_rusty"; 
+
+  # 3. ВКЛЮЧАЕМ NIRI
+  programs.niri.enable = true;
+  
+  # Остальные настройки системы...
+  networking.hostName = "my-machine";
+  # ...
+}
