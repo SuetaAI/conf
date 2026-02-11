@@ -1,32 +1,19 @@
-{ config, pkgs, inputs, ... }: {
-  imports = [ ./hardware-configuration.nix ];
+{
+  description = "SuetaAI System Configuration";
 
-  # Bootloader settings
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  # Networking
-  networking.hostName = "my-machine";
-  networking.networkmanager.enable = true;
-
-  # User setup
-  users.users.user = {
-    isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" "video" ];
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    # Correct flake for Niri module
+    niri.url = "github:sodiboo/niri-flake";
   };
 
-  # Niri and experimental features
-  programs.niri.enable = true;
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  environment.systemPackages = with pkgs; [
-    vim wget git alacritty firefox scx
-  ];
-
-  # Sched-ext settings
-  services.scx.enable = true;
-  services.scx.scheduler = "scx_rustland";
-
-  system.stateVersion = "24.11";
+  outputs = { self, nixpkgs, niri, ... }@inputs: {
+    nixosConfigurations.my-machine = nixpkgs.lib.nixosSystem {
+      specialArgs = { inherit inputs; };
+      modules = [
+        ./configuration.nix
+        niri.nixosModules.niri 
+      ];
+    };
+  };
 }
