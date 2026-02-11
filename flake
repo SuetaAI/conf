@@ -1,19 +1,20 @@
 {
-  description = "Niri Flake Configuration";
+  description = "NixOS configuration with Niri and Flakes";
 
   inputs = {
-    # Using unstable for latest kernel (required for sched_ext) and fresh Niri
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # NixOS official package source
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
 
-    # Official Niri flake
-    niri.url = "github:YaLTeR/niri";
+    # Niri flake that provides the NixOS module
+    niri.url = "github:sodiboo/niri-flake";
   };
 
-  outputs = { self, nixpkgs, niri, ... }: {
+  outputs = { self, nixpkgs, niri, ... }@inputs: {
     nixosConfigurations.my-machine = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
+      specialArgs = { inherit inputs; };
       modules = [
         ./configuration.nix
+        # Includes the Niri module from the flake
         niri.nixosModules.niri
       ];
     };
