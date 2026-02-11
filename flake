@@ -1,11 +1,11 @@
 {
-  description = "Niri + Sched_ext System";
+  description = "Niri Flake Configuration";
 
   inputs = {
-    # Используем unstable для свежего ядра и софта
+    # Using unstable for latest kernel (required for sched_ext) and fresh Niri
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    # Официальный флейк Niri
+    # Official Niri flake
     niri.url = "github:YaLTeR/niri";
   };
 
@@ -14,9 +14,9 @@
       system = "x86_64-linux";
       modules = [
         ./configuration.nix
-        # Модуль Niri из флейка (подключает оверлей автоматически)
         niri.nixosModules.niri
       ];
     };
   };
 }
+EOF
